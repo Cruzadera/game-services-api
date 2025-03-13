@@ -1,4 +1,4 @@
-from app.scraper import check_game_in_gamepass
+from app.scrapers.gamepass_scrapper import check_game_in_gamepass
 
 def test_check_game_in_gamepass():
     # Este test es solo un ejemplo. La respuesta dependerá de la página real.

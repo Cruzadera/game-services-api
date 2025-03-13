@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from app.models import ResponseSearch
-from app.scraper import advanced_search_game
+from app.scrapers.gamepass_scrapper import advanced_search_game
 
 router = APIRouter()
 
@@ -14,7 +14,7 @@ def search_game(query: GameQuery):
     Realiza una búsqueda avanzada en el listado de Game Pass Ultimate.
     
     Recibe un JSON con:
-    - **game_query**: Término a buscar (la búsqueda no distingue mayúsculas/minúsculas y permite coincidencias parciales).
+    - **game_name**: Término a buscar (la búsqueda no distingue mayúsculas/minúsculas y permite coincidencias parciales).
     
     Retorna un objeto con:
     - **game**: El nombre original del juego encontrado.
