@@ -1,30 +1,41 @@
-# Game Pass API
+# Game Services API
 
-Esta API permite consultar si un juego está incluido en Xbox Game Pass mediante scraping de la página de TrueAchievements.
+This API provides endpoints to query information about video game streaming services—including Xbox Game Pass (and related services like Xbox Cloud Gaming), Amazon Luna, GeForce Now, and others—by scraping the respective websites.
 
-## Requisitos
+## Requirements
 
-- Python 3.8.10 (o superior)
+- Python 3.8.10 (or later)
 - FastAPI
 - Uvicorn
 - Requests
 - BeautifulSoup4
-- SQLAlchemy (opcional, si se usa la base de datos)
+- SQLAlchemy (optional, if you plan to use a database)
 
-## Instalación
+## Installation
 
-1. Clona el repositorio.
-2. Crea y activa un entorno virtual:
-   - En Linux/macOS:
+1. **Clone the repository:**
+
+   ```bash
+   git clone https://github.com/YourUsername/game-services-api.git
+   cd game-services-api
+
+2. Create and activate a virtual environment:
+   - On Linux/macOS:
      ```bash
      python3 -m venv env
      source env/bin/activate
      ```
-   - En Windows:
+   - On Windows:
      ```bash
      python -m venv env
      env\Scripts\activate
      ```
-3. Instala las dependencias:
+3. Install the dependencies:
    ```bash
    pip install -r requirements.txt
+
+4. Running the API Locally
+  ```bash
+  uvicorn app.main:app --host 0.0.0.0 --port 10000 --reload
+  ```
+Your API will be available at http://localhost:10000.
