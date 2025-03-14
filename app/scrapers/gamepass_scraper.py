@@ -18,13 +18,13 @@ def advanced_search_game(game_query: str) -> ResponseSearch:
         response = requests.get(url)
         if response.status_code != 200:
             print(f"No se pudo acceder a la página (código {response.status_code}).")
-            return {"game": "", "in_gamepass": False}  # Respuesta válida aunque haya error
+            return ResponseSearch(game="", in_gamepass=False)
 
         soup = BeautifulSoup(response.text, "html.parser")
         table = soup.find("table", class_="maintable")
         if not table:
             print("No se encontró la tabla con la clase 'maintable'. Fin de la búsqueda.")
-            return {"game": "", "in_gamepass": False}  # No hay más juegos
+            return ResponseSearch(game="", in_gamepass=False)
 
         tbody = table.find("tbody") or table
         rows = tbody.find_all("tr")
@@ -41,13 +41,12 @@ def advanced_search_game(game_query: str) -> ResponseSearch:
             game_name = origin_game_name.lower()
             if query_lower in game_name:
                 print(f"¡Encontrado '{game_query}' como '{origin_game_name}'!")
-                return {"game": origin_game_name, "in_gamepass": True}
+                return ResponseSearch(game=origin_game_name, in_gamepass=True)
 
         # Si no hay siguiente página, salimos
         next_link = soup.find("a", text=">")
         if not next_link:
-            print("No se encontró enlace para la siguiente página. Fin de la búsqueda.")
-            return {"game": "", "in_gamepass": False}
+            return ResponseSearch(game="", in_gamepass=False)
 
         page_number += 1
 
