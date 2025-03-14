@@ -44,8 +44,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Despliegue a Render utilizando el CLI de Render.
-      # Asegúrate de configurar los secrets RENDER_API_KEY y RENDER_SERVICE_ID en GitHub.
-      - name: Deploy to Render
+      - name: Deploy to Render via API
         run: |
-          npx render deploy --api-key ${{ secrets.RENDER_API_KEY }} --service-id ${{ secrets.RENDER_SERVICE_ID }}
+          curl -X POST "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
+            -H "Accept: application/json" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}"
+
