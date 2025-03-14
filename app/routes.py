@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from app.models import ResponseSearch
 from app.scrapers.gamepass_scrapper import advanced_search_game
@@ -7,6 +8,15 @@ router = APIRouter()
 
 class GameQuery(BaseModel):
     game_name: str
+
+
+@router.get("/", tags=["General"])
+def read_root():
+    """
+    Endpoint raíz que da la bienvenida a la API.
+    """
+    return JSONResponse(content={"message": "Hola, mundo! Bienvenido a la API de Game Services."})
+
 
 @router.post("/game", response_model=ResponseSearch, tags=["Game"])
 def search_game(query: GameQuery):
