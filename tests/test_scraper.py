@@ -1,4 +1,4 @@
-from app.scrapers.gamepass_scrapper import advanced_search_game
+from app.scrapers.gamepass_scraper import advanced_search_game
 from app.models import ResponseSearch
 
 def test_advanced_search_game():
@@ -20,5 +20,5 @@ def test_advanced_search_game_valid():
     
     # Si el juego está en Game Pass, debería devolver un diccionario con el nombre original y True.
     assert isinstance(resultado, ResponseSearch)
-    assert "game" in resultado
+    assert resultado.game == "Terraria"
     assert resultado.in_gamepass is True

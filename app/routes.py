@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from app.models import ResponseSearch
-from app.scrapers.gamepass_scrapper import advanced_search_game
+from app.scrapers.gamepass_scraper import advanced_search_game
 
 router = APIRouter()
 
