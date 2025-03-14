@@ -5,4 +5,4 @@ beautifulsoup4==4.11.1
 SQLAlchemy==1.4.36
 pydantic>=1.9.0
 pytest==8.3.5
-anyio>=3.6.1
+anyio==3.6.1
