@@ -2,6 +2,8 @@ name: Actualizar CHANGELOG
 
 on:
   pull_request:
+    # Solo se activa si la PR va hacia main
+    branches: [ main ]
     types: [opened, synchronize, reopened]
 
 jobs:
@@ -9,24 +11,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
+
       - name: Configurar Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.x'
-      
+
       - name: Instalar dependencias
         run: pip install PyGithub
-      
+
       - name: Ejecutar script para actualizar CHANGELOG
         run: python scripts/update_changelog.py
-      
+
       - name: Commit y push de los cambios
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
           git add CHANGELOG.md
           git commit -m "Actualización automática del CHANGELOG"
-          git push
+          git push origin HEAD:release/0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
