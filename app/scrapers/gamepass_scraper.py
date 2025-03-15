@@ -29,7 +29,7 @@ def advanced_search_game_core(game_query: str) -> ResponseSearch:
     y verifica si el término de búsqueda se encuentra dentro del nombre de algún juego.
     """
     query_lower = game_query.strip().lower()
-    base_url = "https://www.trueachievements.com/game-pass-standard/games?page={}"
+    base_url = "https://www.trueachievements.com/game-pass-core/games?page={}"
 
     return search_advanced(base_url, query_lower, game_query)
 

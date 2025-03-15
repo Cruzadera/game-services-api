@@ -7,8 +7,10 @@ from app.utils.helpers import buildResponseGamePass
 
 router = APIRouter()
 
+
 class GameQuery(BaseModel):
     game_name: str
+
 
 @router.get("/", tags=["General"])
 def read_root():
@@ -16,6 +18,7 @@ def read_root():
     Endpoint raíz que da la bienvenida a la API.
     """
     return JSONResponse(content={"message": "Hola, mundo! Bienvenido a la API de Game Services."})
+
 
 @router.post("/game-pass", response_model=ResponseGamePass, tags=["GamePass"])
 def search_game(query: GameQuery):
@@ -34,7 +37,7 @@ def search_game(query: GameQuery):
     resultGPS = advanced_search_game_standard(query.game_name)
     resultGPC = advanced_search_game_core(query.game_name)
 
-    if not resultGPU and not resultGPS and not resultGPC:
+    if resultGPU.in_gamepass == False and resultGPS.in_gamepass == False and resultGPC.in_gamepass == False:
         raise HTTPException(
             status_code=404,
             detail=f"No se encontró ningún juego que contenga '{query.game_name}'."

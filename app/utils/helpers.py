@@ -1,4 +1,4 @@
-from app.models import ResponseGamePass
+from app.models import ResponseGamePass, ResponseSearch
 
 
 def format_game_name(game_name: str) -> str:
@@ -8,7 +8,7 @@ def format_game_name(game_name: str) -> str:
     return game_name.strip().lower()
 
 
-def buildResponseGamePass(resultGPC, resultGPS, resultGPU) -> ResponseGamePass:
+def buildResponseGamePass(resultGPC: ResponseSearch, resultGPS: ResponseSearch, resultGPU: ResponseSearch) -> ResponseGamePass:
     """
     Construye la respuesta de la API combinando los resultados de los distintos niveles de Game Pass.
     
@@ -18,23 +18,20 @@ def buildResponseGamePass(resultGPC, resultGPS, resultGPU) -> ResponseGamePass:
     - **tiers**: Lista de los niveles en los que está disponible (Ultimate, Standard, Core).
     """
 
-    game_name = None
     tiers = []
 
-    # Determinar el nombre del juego (el primero encontrado)
-    if resultGPU:
-        game_name = resultGPU["game"]
+    if resultGPU and resultGPU.in_gamepass:
         tiers.append("Ultimate")
-    if resultGPS:
-        game_name = game_name or resultGPS["game"]
+    if resultGPS and resultGPS.in_gamepass:
         tiers.append("Standard")
-    if resultGPC:
-        game_name = game_name or resultGPC["game"]
+    if resultGPC and resultGPC.in_gamepass:
         tiers.append("Core")
 
-    return ResponseSearch(
-        game=game_name,
-        in_gamepass=True,
+    return ResponseGamePass(
+        game=resultGPU.game if resultGPU and resultGPU.in_gamepass 
+        else resultGPS.game if resultGPS and resultGPS.in_gamepass 
+        else resultGPC.game if resultGPC and resultGPC.in_gamepass 
+        else "Unknown",
         tiers=tiers
     )
 

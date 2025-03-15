@@ -12,5 +12,4 @@ class ResponseSearch(BaseModel):
 
 class ResponseGamePass(BaseModel):
     game: str
-    in_gamepass: bool
     tiers: List[str]
