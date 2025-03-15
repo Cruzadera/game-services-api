@@ -2,15 +2,39 @@ import requests
 from bs4 import BeautifulSoup
 from app.models import ResponseSearch
 
-def advanced_search_game(game_query: str) -> ResponseSearch:
+def advanced_search_game_ultimate(game_query: str) -> ResponseSearch:
     """
     Recorre las páginas del listado de Game Pass Ultimate en TrueAchievements
     y verifica si el término de búsqueda se encuentra dentro del nombre de algún juego.
     """
     query_lower = game_query.strip().lower()
-    page_number = 1
     base_url = "https://www.trueachievements.com/game-pass-ultimate/games?page={}"
 
+    return search_advanced(base_url, query_lower, game_query);
+
+def advanced_search_game_standard(game_query: str) -> ResponseSearch:
+    """
+    Recorre las páginas del listado de Game Pass Standard en TrueAchievements
+    y verifica si el término de búsqueda se encuentra dentro del nombre de algún juego.
+    """
+    query_lower = game_query.strip().lower()
+    base_url = "https://www.trueachievements.com/game-pass-standard/games?page={}"
+
+    return search_advanced(base_url, query_lower, game_query);
+
+
+def advanced_search_game_core(game_query: str) -> ResponseSearch:
+    """
+    Recorre las páginas del listado de Game Pass Core en TrueAchievements
+    y verifica si el término de búsqueda se encuentra dentro del nombre de algún juego.
+    """
+    query_lower = game_query.strip().lower()
+    base_url = "https://www.trueachievements.com/game-pass-standard/games?page={}"
+
+    return search_advanced(base_url, query_lower, game_query)
+
+def search_advanced(base_url: str, query_lower: str, game_query:str) -> ResponseSearch:
+    page_number = 1
     while True:
         url = base_url.format(page_number)
         print(f"Consultando: {url}")
@@ -50,11 +74,10 @@ def advanced_search_game(game_query: str) -> ResponseSearch:
 
         page_number += 1
 
-
 # Ejemplo de uso:
 if __name__ == "__main__":
     juego_a_buscar = "plague tale"
-    if advanced_search_game(juego_a_buscar):
+    if advanced_search_game_ultimate(juego_a_buscar):
         print(f"El término '{juego_a_buscar}' coincide con algún juego en Game Pass Ultimate.")
     else:
         print(f"No se encontró ningún juego que contenga '{juego_a_buscar}'.")
