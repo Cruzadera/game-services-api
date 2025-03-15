@@ -9,3 +9,8 @@ def format_game_name(game_name: str) -> str:
 
 
 def buildResponseGamePass(resultGPC: ResponseSearch, resultGPS: ResponseSearch, resultGPU: ResponseSearch):
+    """
+    Función auxiliar para devolver la respuesta de los distintos game pass disponibles
+    """
+    
+    
