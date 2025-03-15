@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import List, Optional
 
 class GameStatus(BaseModel):
     game: str
@@ -9,3 +9,7 @@ class GameStatus(BaseModel):
 class ResponseSearch(BaseModel):
     game: Optional[str] = None
     in_gamepass: bool
+
+class ResponseGamePass(BaseModel):
+    game: str
+    tiers: List[str]
