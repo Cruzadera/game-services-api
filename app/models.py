@@ -9,3 +9,8 @@ class GameStatus(BaseModel):
 class ResponseSearch(BaseModel):
     game: Optional[str] = None
     in_gamepass: bool
+
+class ResponseGamePass(BaseModel):
+    game: str
+    in_gamepass: bool
+    tiers: List[str]

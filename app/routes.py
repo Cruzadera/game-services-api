@@ -20,15 +20,16 @@ def read_root():
 
 @router.post("/game", response_model=ResponseSearch, tags=["Game"])
 def search_game(query: GameQuery):
-    """
+     """
     Realiza una búsqueda avanzada en el listado de Game Pass
     
     Recibe un JSON con:
-    - **game_name**: Término a buscar (la búsqueda no distingue mayúsculas/minúsculas y permite coincidencias parciales).
+    - **game_name**: Término a buscar (búsqueda case-insensitive y parcial).
     
     Retorna un objeto con:
-    - **game**: El nombre original del juego encontrado.
-    - **in_gamepass**: Valor True, indicando que el juego se encontró en el catálogo.
+    - **game**: Nombre original del juego encontrado.
+    - **in_gamepass**: Indica si el juego está en Game Pass.
+    - **tiers**: Lista con las versiones donde está disponible (Ultimate, Standard, Core).
     """
     resultGPU = advanced_search_game_ultimate(query.game_name)
     resultGPS = advanced_search_game_standard(query.game_name)
@@ -39,6 +40,5 @@ def search_game(query: GameQuery):
             status_code=404,
             detail=f"No se encontró ningún juego que contenga '{query.game_name}'."
         )
-    else:
-        buildResponseGamePass(resultGPC, resultGPS, resultGPU)
-    return resultGPU
+    
+    return buildResponseGamePass(resultGPC, resultGPS, resultGPU)
