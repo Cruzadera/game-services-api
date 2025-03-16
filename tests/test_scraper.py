@@ -1,4 +1,4 @@
-from app.scrapers.gamepass_scrapper import advanced_search_game
+from app.scrapers.gamepass_scraper import advanced_search_game
 from app.models import ResponseGamePass
 
 def test_advanced_search_game():
