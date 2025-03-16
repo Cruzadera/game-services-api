@@ -34,4 +34,5 @@ jobs:
           git commit -m "Actualización automática del CHANGELOG"
           git push origin HEAD:release/0.2
         env:
+          MY_GITHUB_PAT: ${{ secrets.MY_GITHUB_PAT }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

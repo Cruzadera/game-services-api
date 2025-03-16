@@ -1,7 +1,7 @@
 from github import Github
 import os
 
-token = os.environ.get("GITHUB_TOKEN")
+token = os.environ.get("MY_GITHUB_PAT") or os.environ.get("GITHUB_TOKEN")
 repo_name = os.environ.get("GITHUB_REPOSITORY")
 g = Github(token)
 repo = g.get_repo(repo_name)
