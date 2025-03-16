@@ -1,9 +1,10 @@
 name: Actualizar CHANGELOG
 
 on:
-  pull_request:
-    branches: [ main ]
-    types: [ opened, synchronize, reopened ]
+  push:
+    branches: 
+      - main
+      - develop
 
 jobs:
   update-changelog:
@@ -11,8 +12,21 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          persist-credentials: false
           fetch-depth: 0
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.ref }}
+
+      - name: Configurar Git
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Forzar uso de PAT en el remoto
+        run: |
+          git remote remove origin
+          git remote add origin https://$MY_GITHUB_PAT@github.com/${{ github.repository }}.git
+        env:
+          MY_GITHUB_PAT: ${{ secrets.MY_GITHUB_PAT }}
 
       - name: Configurar Python
         uses: actions/setup-python@v2
@@ -27,13 +41,8 @@ jobs:
 
       - name: Commit y push de los cambios
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
           git add CHANGELOG.md
-          # Si no hay cambios, evita error en commit
           git commit -m "Actualización automática del CHANGELOG" || echo "No changes to commit"
-          # Actualiza la URL remota para incluir el PAT y así tener permisos de escritura
-          git remote set-url origin https://$MY_GITHUB_PAT@github.com/${{ github.repository }}.git
-          git push origin HEAD:release/0.2
+          git push origin HEAD:${{ github.ref_name }}
         env:
           MY_GITHUB_PAT: ${{ secrets.MY_GITHUB_PAT }}
