@@ -23,9 +23,9 @@ def test_post_game_search():
         assert "tiers" in data
         assert isinstance(data["tiers"], list)
 
-def test_invalid_game_request():
+def test_notfound_game_request():
     """
     Verifica que el endpoint maneje correctamente una petición inválida.
     """
     response = client.post("/game", json={})
-    assert response.status_code == 422  # Unprocessable Entity debido a datos incorrectos
+    assert response.status_code == 404
