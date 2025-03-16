@@ -17,7 +17,7 @@ def read_root():
     """
     Endpoint raíz que da la bienvenida a la API.
     """
-    return JSONResponse(content={"message": "Hola, mundo! Bienvenido a la API de Game Services."})
+    return JSONResponse(content={"message": "Welcome to the Game Services API"})
 
 
 @router.post("/game-pass", response_model=ResponseGamePass, tags=["GamePass"])
