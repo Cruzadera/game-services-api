@@ -1,32 +1,48 @@
 name: Actualizar CHANGELOG
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  push:
+    branches: 
+      - main
+      - develop
 
 jobs:
   update-changelog:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+
+      - name: Configurar Git
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Forzar uso de PAT en el remoto
+        run: |
+          git remote remove origin
+          git remote add origin https://$MY_GITHUB_PAT@github.com/${{ github.repository }}.git
+        env:
+          MY_GITHUB_PAT: ${{ secrets.MY_GITHUB_PAT }}
+
       - name: Configurar Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.x'
-      
+
       - name: Instalar dependencias
         run: pip install PyGithub
-      
+
       - name: Ejecutar script para actualizar CHANGELOG
         run: python scripts/update_changelog.py
-      
+
       - name: Commit y push de los cambios
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
           git add CHANGELOG.md
-          git commit -m "Actualización automática del CHANGELOG"
-          git push
+          git commit -m "Actualización automática del CHANGELOG" || echo "No changes to commit"
+          git push origin HEAD:${{ github.ref_name }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MY_GITHUB_PAT: ${{ secrets.MY_GITHUB_PAT }}
