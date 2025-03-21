@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
-from app.models import ResponseSearch
+from app.models import ResponseSearch, ResponseGamePass
+from typing import List, Dict
 
 def advanced_search_game_ultimate(game_query: str) -> ResponseSearch:
     """
@@ -73,6 +74,50 @@ def search_advanced(base_url: str, query_lower: str, game_query:str) -> Response
             return ResponseSearch(game="", in_gamepass=False)
 
         page_number += 1
+
+
+async def scrape_all_gamepass_games() -> List[ResponseGamePass]:
+    games_dict: Dict[str, set] = {}
+
+    tier_bases = {
+        "Ultimate": "https://www.trueachievements.com/game-pass-ultimate/games?page={}",
+        "Standard": "https://www.trueachievements.com/game-pass-standard/games?page={}",
+        "Core": "https://www.trueachievements.com/game-pass-core/games?page={}"
+    }
+
+    for tier, base_url in tier_bases.items():
+        page_number = 1
+        while True:
+            url = base_url.format(page_number)
+            print(f"Consultando ({tier}): {url}")
+            response = requests.get(url)
+            if response.status_code != 200:
+                print(f"No se pudo acceder a la página {page_number} para el tier {tier}.")
+                break
+
+            soup = BeautifulSoup(response.text, "html.parser")
+            table = soup.find("table", class_="maintable")
+            if not table:
+                print(f"No se encontró la tabla en el tier {tier} en la página {page_number}.")
+                break
+
+            for row in table.find_all("tr"):
+                cells = row.find_all("td")
+                if len(cells) < 2:
+                    continue
+                game_name = cells[1].get_text(strip=True)
+                if game_name:
+                    if game_name not in games_dict:
+                        games_dict[game_name] = set()
+                    games_dict[game_name].add(tier)
+
+            next_link = soup.find("a", string=">")
+            if not next_link:
+                break
+            page_number += 1
+
+    results = [ResponseGamePass(game=game, tiers=list(tiers)) for game, tiers in games_dict.items()]
+    return results if results else []  # ✅ Devuelve siempre una lista, aunque esté vacía
 
 # Ejemplo de uso:
 if __name__ == "__main__":

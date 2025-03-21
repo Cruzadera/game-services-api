@@ -2,8 +2,11 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from app.models import ResponseSearch, ResponseGamePass
-from app.scrapers.gamepass_scraper import advanced_search_game_core, advanced_search_game_standard, advanced_search_game_ultimate
+from app.scrapers.gamepass_scraper import advanced_search_game_core, advanced_search_game_standard, advanced_search_game_ultimate, scrape_all_gamepass_games
 from app.utils.helpers import buildResponseGamePass
+from app.database import upsert_games
+from typing import List
+from app.services.gamepass_service import fill_games_in_gamepass
 
 router = APIRouter()
 
@@ -44,3 +47,15 @@ def search_game(query: GameQuery):
         )
 
     return buildResponseGamePass(resultGPC, resultGPS, resultGPU)
+
+
+@router.post("/fill-gamepass", response_model=List[ResponseGamePass], tags=["GamePass"])
+async def search_gamepass():
+    """
+    Actualiza o crea nuevos juegos con los tiers correspondiente que tiene disponible en el GamePass
+    """
+    try:
+        result = await fill_games_in_gamepass()
+        return {"message": "Game Pass database updated successfully."}
+    except Exception as e:
+        raise HTTPException(status_code=500)
