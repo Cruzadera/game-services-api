@@ -1,4 +1,4 @@
-from app.models import ResponseGamePass
+from app.models import ResponseGameOnline
 from app.scrapers.gamepass_scraper import advanced_search_game_core, advanced_search_game_standard, advanced_search_game_ultimate, scrape_all_gamepass_games
 from app.database import upsert_games
 

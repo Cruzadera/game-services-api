@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-from app.models import ResponseSearch, ResponseGamePass
+from app.models import ResponseSearch, ResponseGameOnline
 from typing import List, Dict
 
 def advanced_search_game_ultimate(game_query: str) -> ResponseSearch:
@@ -76,7 +76,7 @@ def search_advanced(base_url: str, query_lower: str, game_query:str) -> Response
         page_number += 1
 
 
-async def scrape_all_gamepass_games() -> List[ResponseGamePass]:
+async def scrape_all_gamepass_games() -> List[ResponseGameOnline]:
     games_dict: Dict[str, set] = {}
 
     tier_bases = {
@@ -116,7 +116,7 @@ async def scrape_all_gamepass_games() -> List[ResponseGamePass]:
                 break
             page_number += 1
 
-    results = [ResponseGamePass(game=game, tiers=list(tiers)) for game, tiers in games_dict.items()]
+    results = [ResponseGameOnline(game=game, tiers=list(tiers)) for game, tiers in games_dict.items()]
     return results if results else []  # ✅ Devuelve siempre una lista, aunque esté vacía
 
 # Ejemplo de uso:
