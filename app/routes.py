@@ -6,6 +6,7 @@ from app.scrapers.gamepass_scraper import advanced_search_game_core, advanced_se
 from app.utils.helpers import buildResponseGameOnline
 from app.services.gamepass_service import fill_games_in_gamepass
 from app.services.nintendoonline_service import fill_games_in_nso
+from app.services.game_search_service import search_game_by_name
 
 router = APIRouter()
 
@@ -62,3 +63,11 @@ async def update_online_services():
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail="Error updating game services database.")
+
+@router.get("/search", tags=["Online Services"])
+async def search_game(game: str):
+    result = await search_game_by_name(game)
+    if not result:
+        raise HTTPException(status_code=404, detail=f"No se encontró '{game}' en la base de datos.")
+
+    return ResponseGameOnline(game=result["game"], tiers=result["tiers"])
