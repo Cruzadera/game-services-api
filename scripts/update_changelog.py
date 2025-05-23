@@ -9,11 +9,19 @@ repo = g.get_repo(repo_name)
 
 # Obtener PR cerradas con fusión que tengan como base main y develop
 merged_prs = []
+# Primero, los PRs fusionados hacia main
 for pr in repo.get_pulls(state='closed', base='main'):
     if pr.is_merged():
         merged_prs.append(pr)
+
+# Luego, los PRs fusionados hacia develop
 for pr in repo.get_pulls(state='closed', base='develop'):
     if pr.is_merged():
+        merged_prs.append(pr)
+
+# Además, puedes buscar merges de ramas feature en develop (PRs cuyo base es develop)
+for pr in repo.get_pulls(state='closed', base='develop'):
+    if pr.is_merged() and 'feature' in pr.head.ref:
         merged_prs.append(pr)
 
 # Ordenar las PR fusionadas por fecha de fusión (más recientes primero)
