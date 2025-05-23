@@ -14,6 +14,7 @@ games_collection = db['games']
 
 print("Connected to Database...")
 
+
 async def fetch_all_games():
     games = []
     # Ahora games_collection es un objeto de colección y podemos usar find()
@@ -22,15 +23,22 @@ async def fetch_all_games():
         games.append(game)
     return games
 
+
 async def upsert_games(games_data: list):
     """
     Inserta o actualiza los datos de juegos en MongoDB.
     """
-    await games_collection.delete_many({})  # Limpia la colección antes de insertar nuevos datos
+    if not games_data:
+        return
 
-    if games_data:
-        # Convertir cada objeto a diccionario si aún no lo es
-        formatted_games = [
-            game.dict() if hasattr(game, "dict") else game for game in games_data
-        ]
-        await games_collection.insert_many(formatted_games)
+    for game in games_data:
+        doc = game.dict() if hasattr(game, "dict") else game
+        existing = await games_collection.find_one({"game": doc["game"]})
+        if existing:
+            doc["tiers"] = list(set(existing.get("tiers", []))
+                                | set(doc.get("tiers", [])))
+        await games_collection.update_one(
+            {"game": doc["game"]},
+            {"$set": doc},
+            upsert=True
+        )

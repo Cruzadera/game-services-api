@@ -3,15 +3,11 @@ import cloudscraper
 from bs4 import BeautifulSoup
 from app.models import ResponseGameOnline
 from typing import List
+from app.utils.logger import log_info
 
 scraper = cloudscraper.create_scraper()
 
-
 def scrape_nintendo_nso_games() -> List[ResponseGameOnline]:
-    """
-    Extrae los juegos disponibles con suscripción a Nintendo Switch Online y Expansion Pack desde Nintendo Life.
-    Retorna una lista de ResponseGameOnline con 'NSO' o 'NSO Expansion' como tier correspondiente.
-    """
     base_url = "https://www.nintendolife.com/games/browse?subscription=nso%2Cnso-expansion&page={}"
     page_number = 1
     games_dict = {}
@@ -30,20 +26,18 @@ def scrape_nintendo_nso_games() -> List[ResponseGameOnline]:
 
     while True:
         url = base_url.format(page_number)
-        print(f"🔎 Consultando NSO: {url}")
+        log_info(f"Consultando NSO: {url}", icon="🔎")
         response = scraper.get(url, headers=headers)
 
         if response.status_code != 200:
-            print(
-                f"❌ Página {page_number} no accesible (código {response.status_code}). Finalizando scrape.")
+            log_info(f"Página {page_number} no accesible (código {response.status_code}). Finalizando scrape.", icon="❌")
             break
 
         soup = BeautifulSoup(response.text, "html.parser")
         game_cards = soup.select("ul.items > li.item.item-content.item-game")
 
         if not game_cards:
-            print(
-                f"✅ No se encontraron más juegos en la página {page_number}. Fin del scrape.")
+            log_info(f"No se encontraron más juegos en la página {page_number}. Fin del scrape.", icon="✅")
             break
 
         for card in game_cards:
@@ -53,7 +47,6 @@ def scrape_nintendo_nso_games() -> List[ResponseGameOnline]:
             if not title_tag:
                 continue
 
-            # Elimina el span con la plataforma (SNES, NES, etc.) antes de extraer el texto del título
             subtitle_span = title_tag.find("span", class_="subtitle")
             if subtitle_span:
                 subtitle_span.decompose()
@@ -77,16 +70,15 @@ def scrape_nintendo_nso_games() -> List[ResponseGameOnline]:
                 games_dict[game_name].add(tier)
 
         page_number += 1
-        time.sleep(1)  # Espera de 1 segundo entre páginas para evitar bloqueo por scraping
-
+        time.sleep(1)
 
     if not games_dict:
-        print("⚠️ No se recogieron juegos. ¿La web ha cambiado su estructura?")
+        log_info("No se recogieron juegos. ¿La web ha cambiado su estructura?", icon="⚠️")
         return []
 
     results = [
         ResponseGameOnline(game=name, tiers=list(tiers))
         for name, tiers in games_dict.items()
     ]
-    print(f"🎉 Total juegos encontrados: {len(results)}")
+    log_info(f"Total juegos encontrados: {len(results)}", icon="🎉")
     return results
