@@ -3,9 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routes import router
 
 app = FastAPI(
-    title="Game Pass API",
-    description="API para consultar si un juego está incluido en Xbox Game Pass",
-    version="1.0.0"
+    title="Game Services API",
+    description="API para consultar la disponibilidad de juegos en plataformas de suscripción como Xbox Game Pass, PlayStation Plus (Essential, Extra, Premium) y Nintendo Online. Permite buscar si un juego está incluido en estos servicios de juegos en línea.",
+    version="0.0.3"
 )
 
 # Habilita CORS
