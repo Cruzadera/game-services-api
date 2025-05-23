@@ -1,4 +1,4 @@
-from app.models import ResponseGamePass, ResponseSearch
+from app.models import ResponseGameOnline, ResponseSearch
 
 
 def format_game_name(game_name: str) -> str:
@@ -8,7 +8,7 @@ def format_game_name(game_name: str) -> str:
     return game_name.strip().lower()
 
 
-def buildResponseGamePass(resultGPC: ResponseSearch, resultGPS: ResponseSearch, resultGPU: ResponseSearch) -> ResponseGamePass:
+def buildResponseGameOnline(resultGPC: ResponseSearch, resultGPS: ResponseSearch, resultGPU: ResponseSearch) -> ResponseGameOnline:
     """
     Construye la respuesta de la API combinando los resultados de los distintos niveles de Game Pass.
     
@@ -27,7 +27,7 @@ def buildResponseGamePass(resultGPC: ResponseSearch, resultGPS: ResponseSearch, 
     if resultGPC and resultGPC.in_gamepass:
         tiers.append("Core")
 
-    return ResponseGamePass(
+    return ResponseGameOnline(
         game=resultGPU.game if resultGPU and resultGPU.in_gamepass 
         else resultGPS.game if resultGPS and resultGPS.in_gamepass 
         else resultGPC.game if resultGPC and resultGPC.in_gamepass 

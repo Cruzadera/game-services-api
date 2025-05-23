@@ -10,6 +10,6 @@ class ResponseSearch(BaseModel):
     game: Optional[str] = None
     in_gamepass: bool
 
-class ResponseGamePass(BaseModel):
+class ResponseGameOnline(BaseModel):
     game: str
     tiers: List[str]
