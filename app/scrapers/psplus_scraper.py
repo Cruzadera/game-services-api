@@ -1,48 +1,128 @@
 import requests
 from bs4 import BeautifulSoup
+from app.models import ResponseGameOnline
+from typing import List
+from app.utils.logger import log_info
 
-def scrape_psplus_games(url="https://www.playstation.com/es-mx/ps-plus/games/"):
-    """
-    Scrapes the official PlayStation PS Plus games page and returns a list of game names.
+BASE_URL = "https://www.pushsquare.com/guides/all-ps-plus-games"
+BLOG_URL = "https://blog.playstation.com/"
 
-    Note:
-    - La estructura de la página puede cambiar. Revisa el HTML actual para ajustar los selectores.
-    - Es posible que parte del contenido se cargue mediante JavaScript; en ese caso,
-      podrías necesitar utilizar una herramienta que soporte renderizado (por ejemplo, Selenium o Playwright).
 
-    Args:
-        url (str): URL de la página de juegos de PS Plus.
+def scrape_playstation_plus_extra_games() -> List[ResponseGameOnline]:
+    log_info("Consultando listado de PS Plus Extra desde Push Square...", icon="🔎")
+    response = requests.get(BASE_URL)
 
-    Returns:
-        list: Lista con los nombres de los juegos disponibles en PS Plus.
-    """
-    headers = {
-        "User-Agent": "Mozilla/5.0 (compatible; PSPlusScraper/1.0; +https://yourdomain.com)"
-    }
-    response = requests.get(url, headers=headers)
     if response.status_code != 200:
-        raise Exception(f"Failed to retrieve page. Status code: {response.status_code}")
+        log_info(
+            f"No se pudo acceder a la página (código {response.status_code})", icon="❌")
+        return []
 
     soup = BeautifulSoup(response.text, "html.parser")
 
-    # Ejemplo: se asume que cada juego está contenido en un <div> con la clase "game-list-item"
-    # y que el título se encuentra en un <h3> dentro de ese div.
-    game_elements = soup.find_all("div", class_="game-list-item")
-    games = []
+    header = soup.find("h3", id="all-ps-plus-extra-games-list")
+    if not header:
+        log_info("No se encontró el encabezado de PS Plus Extra.", icon="⚠️")
+        return []
 
-    for element in game_elements:
-        title_tag = element.find("h3")
-        if title_tag:
-            game_name = title_tag.get_text(strip=True)
-            games.append(game_name)
+    ul = header.find_next("ul", class_="games-style-list")
+    if not ul:
+        log_info("No se encontró la lista de juegos para PS Plus Extra.", icon="⚠️")
+        return []
 
-    return games
+    games_dict = {}
+    for li in ul.find_all("li"):
+        full_text = li.get_text(strip=True)
+        if " – " in full_text:
+            name, platform_text = full_text.split(" – ", 1)
+            tiers = ["PS Plus Extra"]
+            games_dict[name] = set(tiers)
+        else:
+            a_tag = li.find("a")
+            if a_tag:
+                name = a_tag.get_text(strip=True)
+                tiers = ["PS Plus Extra"]
+                games_dict[name] = set(tiers)
 
-if __name__ == "__main__":
-    try:
-        games = scrape_psplus_games()
-        print("PS Plus Games:")
-        for game in games:
-            print(game)
-    except Exception as e:
-        print("Error:", e)
+    results = [ResponseGameOnline(game=game, tiers=list(tiers))
+               for game, tiers in games_dict.items()]
+    log_info(f"Total juegos encontrados en Extra: {len(results)}", icon="🎮")
+    return results
+
+
+def scrape_playstation_plus_premium_games() -> List[ResponseGameOnline]:
+    log_info(
+        "Consultando listado de PS Plus Premium desde Push Square...", icon="🔎")
+    response = requests.get(BASE_URL)
+
+    if response.status_code != 200:
+        log_info(
+            f"No se pudo acceder a la página (código {response.status_code})", icon="❌")
+        return []
+
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    header = soup.find("h3", id="all-ps-plus-premium-games-list")
+    if not header:
+        log_info("No se encontró el encabezado de PS Plus Premium.", icon="⚠️")
+        return []
+
+    ul = header.find_next("ul", class_="games-style-list")
+    if not ul:
+        log_info(
+            "No se encontró la lista de juegos para PS Plus Premium.", icon="⚠️")
+        return []
+
+    games_dict = {}
+    for li in ul.find_all("li"):
+        full_text = li.get_text(strip=True)
+        if " – " in full_text:
+            name, platform_text = full_text.split(" – ", 1)
+            tiers = ["PS Plus Premium"]
+            games_dict[name] = set(tiers)
+        else:
+            a_tag = li.find("a")
+            if a_tag:
+                name = a_tag.get_text(strip=True)
+                tiers = ["PS Plus Premium"]
+                games_dict[name] = set(tiers)
+
+    results = [ResponseGameOnline(game=game, tiers=list(
+        tiers)) for game, tiers in games_dict.items()]
+    log_info(
+        f"Total juegos encontrados en Premium: {len(results)}", icon="👑")
+    return results
+
+
+def scrape_playstation_plus_essential_games() -> List[ResponseGameOnline]:
+    log_info("Consultando juegos de PS Plus Essential desde Push Square...", icon="🔎")
+    response = requests.get(BASE_URL)
+
+    if response.status_code != 200:
+        log_info(f"No se pudo acceder a la página (código {response.status_code})", icon="❌")
+        return []
+
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    header = soup.find("h3", id="all-ps-plus-essential-games-available-now")
+    if not header:
+        log_info("No se encontró el encabezado de PS Plus Essential.", icon="⚠️")
+        return []
+
+    ul = header.find_next("ul", class_="games-style-list")
+    if not ul:
+        log_info("No se encontró la lista de juegos para PS Plus Essential.", icon="⚠️")
+        return []
+
+    games_dict = {}
+    for li in ul.find_all("li"):
+        a_tag = li.find("a")
+        if not a_tag:
+            continue
+        name = a_tag.get_text(strip=True)
+        if not name:
+            continue
+        games_dict[name] = set(["PS Plus Essential"])
+
+    results = [ResponseGameOnline(game=game, tiers=list(tiers)) for game, tiers in games_dict.items()]
+    log_info(f"Total juegos encontrados en Essential: {len(results)}", icon="📅")
+    return results
