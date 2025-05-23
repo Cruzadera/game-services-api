@@ -1,12 +1,11 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from app.models import ResponseSearch, ResponseGamePass
-from app.scrapers.gamepass_scraper import advanced_search_game_core, advanced_search_game_standard, advanced_search_game_ultimate, scrape_all_gamepass_games
-from app.utils.helpers import buildResponseGamePass
-from app.database import upsert_games
-from typing import List
+from app.models import ResponseGameOnline
+from app.scrapers.gamepass_scraper import advanced_search_game_core, advanced_search_game_standard, advanced_search_game_ultimate
+from app.utils.helpers import buildResponseGameOnline
 from app.services.gamepass_service import fill_games_in_gamepass
+from app.services.nintendoonline_service import fill_games_in_nso
 
 router = APIRouter()
 
@@ -23,7 +22,7 @@ def read_root():
     return JSONResponse(content={"message": "Welcome to the Game Services API"})
 
 
-@router.post("/game-pass", response_model=ResponseGamePass, tags=["GamePass"])
+@router.post("/game-pass", response_model=ResponseGameOnline, tags=["GamePass"])
 def search_game(query: GameQuery):
     """
     Realiza una búsqueda avanzada en el listado de Game Pass.
@@ -46,16 +45,20 @@ def search_game(query: GameQuery):
             detail=f"No se encontró ningún juego que contenga '{query.game_name}'."
         )
 
-    return buildResponseGamePass(resultGPC, resultGPS, resultGPU)
+    return buildResponseGameOnline(resultGPC, resultGPS, resultGPU)
 
 
-@router.post("/fill-gamepass", response_model=List[ResponseGamePass], tags=["GamePass"])
-async def search_gamepass():
+@router.post("/fill-online-services", tags=["Online Services"])
+async def update_online_services():
     """
-    Actualiza o crea nuevos juegos con los tiers correspondiente que tiene disponible en el GamePass
+    Actualiza o crea en la base de datos los juegos disponibles en los distintos servicios online
     """
     try:
-        result = await fill_games_in_gamepass()
-        return {"message": "Game Pass database updated successfully."}
+        await fill_games_in_gamepass()
+        await fill_games_in_nso()
+        return JSONResponse(
+            status_code=200,
+            content={"message": "Online game services database updated successfully."}
+        )
     except Exception as e:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500, detail="Error updating game services database.")
