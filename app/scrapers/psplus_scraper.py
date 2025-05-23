@@ -126,3 +126,29 @@ def scrape_playstation_plus_essential_games() -> List[ResponseGameOnline]:
     results = [ResponseGameOnline(game=game, tiers=list(tiers)) for game, tiers in games_dict.items()]
     log_info(f"Total juegos encontrados en Essential: {len(results)}", icon="📅")
     return results
+
+
+async def scrape_all_psplus_games() -> List[ResponseGameOnline]:
+    games_dict = {}
+
+    # Scraping juegos de PS Plus Essential
+    log_info("Iniciando scraping para PS Plus Essential...", icon="🔎")
+    essential_games = scrape_playstation_plus_essential_games()
+    for game in essential_games:
+        games_dict.setdefault(game.game, set()).add("PS Plus Essential")
+
+    # Scraping juegos de PS Plus Extra
+    log_info("Iniciando scraping para PS Plus Extra...", icon="🔎")
+    extra_games = scrape_playstation_plus_extra_games()
+    for game in extra_games:
+        games_dict.setdefault(game.game, set()).add("PS Plus Extra")
+
+    # Scraping juegos de PS Plus Premium
+    log_info("Iniciando scraping para PS Plus Premium...", icon="🔎")
+    premium_games = scrape_playstation_plus_premium_games()
+    for game in premium_games:
+        games_dict.setdefault(game.game, set()).add("PS Plus Premium")
+
+    log_info(f"Total juegos encontrados en PS Plus: {len(games_dict)}", icon="🎉")
+
+    return [ResponseGameOnline(game=game, tiers=list(tiers)) for game, tiers in games_dict.items()]

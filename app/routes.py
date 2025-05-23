@@ -6,6 +6,7 @@ from app.scrapers.gamepass_scraper import advanced_search_game_core, advanced_se
 from app.utils.helpers import buildResponseGameOnline
 from app.services.gamepass_service import fill_games_in_gamepass
 from app.services.nintendoonline_service import fill_games_in_nso
+from app.services.psplus_service import fill_games_in_psplus
 from app.services.game_search_service import search_game_by_name
 
 router = APIRouter()
@@ -57,6 +58,7 @@ async def update_online_services():
     try:
         await fill_games_in_gamepass()
         await fill_games_in_nso()
+        await fill_games_in_psplus() 
         return JSONResponse(
             status_code=200,
             content={"message": "Online game services database updated successfully."}
