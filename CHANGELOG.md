@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## PR #4: refactor: quit unnecessary variables
+*No se encontró cómic para la rama develop*
+
 ## PR #2: Add nintendo switch online and nso games
 *No se encontró cómic para la rama develop*
 
