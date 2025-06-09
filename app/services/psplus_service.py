@@ -1,4 +1,4 @@
-from app.scrapers.psplus_scraper import scrape_all_psplus_games  # Asegúrate de que la función esté correctamente importada
+from app.scrapers.psplus_scraper import scrape_all_psplus_games
 from app.database import upsert_games
 from app.utils.logger import log_info
 import traceback
@@ -6,7 +6,7 @@ import traceback
 async def fill_games_in_psplus():
     try:
         log_info("Scraping juegos de PS Plus...", icon="🔎")
-        games = await scrape_all_psplus_games()  # Llamamos a la función scrape_all_psplus_games() que implementamos antes
+        games = scrape_all_psplus_games()
         log_info(f"{len(games)} juegos obtenidos de PS Plus.", icon="✅")
 
         if not isinstance(games, list):
