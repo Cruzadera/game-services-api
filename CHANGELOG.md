@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## PR #5: Add geforce now games
+*No se encontró cómic para la rama develop*
+
 ## PR #4: refactor: quit unnecessary variables
 *No se encontró cómic para la rama develop*
 
