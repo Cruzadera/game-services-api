@@ -33,7 +33,7 @@ def scrape_playstation_plus_extra_games() -> List[ResponseGameOnline]:
     for li in ul.find_all("li"):
         full_text = li.get_text(strip=True)
         if " – " in full_text:
-            name, platform_text = full_text.split(" – ", 1)
+            name = full_text.split(" – ", 1)
             tiers = ["PS Plus Extra"]
             games_dict[name] = set(tiers)
         else:
@@ -76,7 +76,7 @@ def scrape_playstation_plus_premium_games() -> List[ResponseGameOnline]:
     for li in ul.find_all("li"):
         full_text = li.get_text(strip=True)
         if " – " in full_text:
-            name, platform_text = full_text.split(" – ", 1)
+            name = full_text.split(" – ", 1)
             tiers = ["PS Plus Premium"]
             games_dict[name] = set(tiers)
         else:
