@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
+from unittest.mock import AsyncMock, patch
 from app.main import app
-from unittest.mock import patch
 
 client = TestClient(app)
 
@@ -16,22 +16,14 @@ def test_read_root():
         f"Expected message to be 'Welcome to the Game Services API', but got {response.json()}"
 
 
+@patch("app.routes.search_game_by_name", new_callable=AsyncMock)
 @pytest.mark.asyncio
-async def test_post_game_search():
-    """
-    Testea la búsqueda de un juego en el servicio de Game Pass.
-    """
-    game_name = "Halo"
-    response = client.get(f"/search?game={game_name}")
+async def test_post_game_search(mock_search_game_by_name):
+    mock_search_game_by_name.return_value = {
+        "title": "Halo",
+        "tiers": ["GamePass Ultimate"]
+    }
 
-    assert response.status_code in [200, 404], \
-        f"Expected status code 200 or 404, but got {response.status_code}"
-
-    if response.status_code == 200:
-        data = response.json()
-        assert "game" in data, "'game' key not found in response"
-        assert "tiers" in data, "'tiers' key not found in response"
-        assert isinstance(data["tiers"], list), "'tiers' is not a list"
-    elif response.status_code == 404:
-        assert response.json() == {"detail": "Game not found"}, \
-            f"Expected 'Game not found' message, but got {response.json()}"
+    response = client.get("/search?game=Halo")
+    assert response.status_code == 200
+    assert "Halo" in response.text

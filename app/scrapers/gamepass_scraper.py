@@ -64,9 +64,9 @@ def search_advanced(base_url: str, query_lower: str, game_query: str, tier: str)
 async def scrape_all_gamepass_games() -> List[ResponseGameOnline]:
     games_dict: Dict[str, set] = {}
     tier_bases = {
-        "Ultimate": "https://www.trueachievements.com/game-pass-ultimate/games?page={}",
-        "Standard": "https://www.trueachievements.com/game-pass-standard/games?page={}",
-        "Core": "https://www.trueachievements.com/game-pass-core/games?page={}"
+        "GamePass Ultimate": "https://www.trueachievements.com/game-pass-ultimate/games?page={}",
+        "GamePass Standard": "https://www.trueachievements.com/game-pass-standard/games?page={}",
+        "GamePass Core": "https://www.trueachievements.com/game-pass-core/games?page={}"
     }
 
     for tier, base_url in tier_bases.items():
@@ -101,4 +101,4 @@ async def scrape_all_gamepass_games() -> List[ResponseGameOnline]:
             page_number += 1
 
     log_info(f"Total juegos encontrados (Game Pass): {len(games_dict)}", icon="🎉")
-    return [ResponseGameOnline(game=game, tiers=list(tiers)) for game, tiers in games_dict.items()]
+    return [ResponseGameOnline(title=game, tiers=list(tiers)) for game, tiers in games_dict.items()]

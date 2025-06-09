@@ -1,6 +1,8 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
 import os
+from typing import List
+from pymongo import UpdateOne
 
 load_dotenv()
 
@@ -24,21 +26,40 @@ async def fetch_all_games():
     return games
 
 
-async def upsert_games(games_data: list):
-    """
-    Inserta o actualiza los datos de juegos en MongoDB.
-    """
-    if not games_data:
-        return
+async def upsert_games(games: List[dict]):
+    operations = []
 
-    for game in games_data:
-        doc = game.dict() if hasattr(game, "dict") else game
-        existing = await games_collection.find_one({"game": doc["game"]})
-        if existing:
-            doc["tiers"] = list(set(existing.get("tiers", []))
-                                | set(doc.get("tiers", [])))
-        await games_collection.update_one(
-            {"game": doc["game"]},
-            {"$set": doc},
-            upsert=True
+    for doc in games:
+        if "title" not in doc:
+            continue
+
+        operations.append(
+            UpdateOne(
+                {"title": doc["title"]},
+                {"$set": doc},
+                upsert=True
+            )
         )
+
+    if operations:
+        result = await games_collection.bulk_write(operations)
+        print(f"📦 Upserts: {result.upserted_count}, Modificados: {result.modified_count}")
+
+async def upsert_streaming(games: List[dict]):
+    operations = []
+
+    for doc in games:
+        if "title" not in doc or "streaming" not in doc:
+            continue
+
+        operations.append(
+            UpdateOne(
+                {"title": doc["title"]},
+                {"$set": {"streaming": doc["streaming"]}},
+                upsert=True
+            )
+        )
+
+    if operations:
+        result = await games_collection.bulk_write(operations)
+        print(f"☁️ Upserts streaming: {result.upserted_count}, Modificados: {result.modified_count}")

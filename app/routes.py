@@ -8,6 +8,7 @@ from app.services.gamepass_service import fill_games_in_gamepass
 from app.services.nintendoonline_service import fill_games_in_nso
 from app.services.psplus_service import fill_games_in_psplus
 from app.services.game_search_service import search_game_by_name
+from app.services.streaming_games_service import fill_games_in_streaming
 
 router = APIRouter()
 
@@ -52,19 +53,24 @@ def search_game(query: GameQuery):
 
 @router.post("/fill-online-services", tags=["Online Services"])
 async def update_online_services():
-    """
-    Actualiza o crea en la base de datos los juegos disponibles en los distintos servicios online
-    """
     try:
+        print(">>> Llamando a Game Pass")
         await fill_games_in_gamepass()
+
+        print(">>> Llamando a Nintendo Switch Online")
         await fill_games_in_nso()
-        await fill_games_in_psplus() 
-        return JSONResponse(
-            status_code=200,
-            content={"message": "Online game services database updated successfully."}
-        )
+
+        print(">>> Llamando a PS Plus")
+        await fill_games_in_psplus()
+
+        print(">>> Llamando a GeForce NOW / Streaming")
+        await fill_games_in_streaming()
+
+        return JSONResponse(status_code=200, content={"message": "Todo OK"})
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Error updating game services database.")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
 @router.get("/search", tags=["Online Services"])
 async def search_game(game: str):
@@ -72,4 +78,4 @@ async def search_game(game: str):
     if not result:
         raise HTTPException(status_code=404, detail=f"No se encontró '{game}' en la base de datos.")
 
-    return ResponseGameOnline(game=result["game"], tiers=result["tiers"])
+    return ResponseGameOnline(title=result["title"], tiers=result["tiers"])

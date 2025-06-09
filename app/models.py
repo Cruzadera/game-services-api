@@ -11,5 +11,6 @@ class ResponseSearch(BaseModel):
     in_gamepass: bool
 
 class ResponseGameOnline(BaseModel):
-    game: str
-    tiers: List[str]
+    title: str
+    tiers: List[str] = []
+    streaming: List[str] = []
