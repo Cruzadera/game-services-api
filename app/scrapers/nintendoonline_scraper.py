@@ -77,7 +77,7 @@ def scrape_nintendo_nso_games() -> List[ResponseGameOnline]:
         return []
 
     results = [
-        ResponseGameOnline(game=name, tiers=list(tiers))
+        ResponseGameOnline(title=name, tiers=list(tiers))
         for name, tiers in games_dict.items()
     ]
     log_info(f"Total juegos encontrados: {len(results)}", icon="🎉")
