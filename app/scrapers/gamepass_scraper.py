@@ -101,4 +101,4 @@ async def scrape_all_gamepass_games() -> List[ResponseGameOnline]:
             page_number += 1
 
     log_info(f"Total juegos encontrados (Game Pass): {len(games_dict)}", icon="🎉")
-    return [ResponseGameOnline(game=game, tiers=list(tiers)) for game, tiers in games_dict.items()]
+    return [ResponseGameOnline(title=game, tiers=list(tiers)) for game, tiers in games_dict.items()]

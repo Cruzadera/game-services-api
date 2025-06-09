@@ -1,6 +1,7 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
 import os
+from typing import List
 
 load_dotenv()
 
@@ -24,21 +25,17 @@ async def fetch_all_games():
     return games
 
 
-async def upsert_games(games_data: list):
-    """
-    Inserta o actualiza los datos de juegos en MongoDB.
-    """
-    if not games_data:
-        return
+async def upsert_games(games: List[dict]):
+    for doc in games:
+        if "title" not in doc:
+            continue  # Evita fallos si falta el campo
 
-    for game in games_data:
-        doc = game.dict() if hasattr(game, "dict") else game
-        existing = await games_collection.find_one({"game": doc["game"]})
+        existing = await games_collection.find_one({"title": doc["title"]})
+
         if existing:
-            doc["tiers"] = list(set(existing.get("tiers", []))
-                                | set(doc.get("tiers", [])))
-        await games_collection.update_one(
-            {"game": doc["game"]},
-            {"$set": doc},
-            upsert=True
-        )
+            await games_collection.update_one(
+                {"title": doc["title"]},
+                {"$set": doc}
+            )
+        else:
+            await games_collection.insert_one(doc)
