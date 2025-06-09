@@ -2,6 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 from app.main import app
 from unittest.mock import patch, AsyncMock
+from app.services.game_search_service import search_game_by_name
 
 client = TestClient(app)
 
