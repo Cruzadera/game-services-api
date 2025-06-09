@@ -91,7 +91,7 @@ async def test_scrape_all_gamepass_games():
     assert all(isinstance(game, ResponseGameOnline) for game in games)
     print("\n🧪 Resultados del scraper Game Pass:")
     for g in games[:10]:
-        print(f"- {g.game} ({', '.join(g.tiers)})")
+        print(f"- {g.title} ({', '.join(g.tiers)})")
     print(f"\n✅ Total juegos encontrados: {len(games)}")
 
 def test_advanced_search_game_ultimate_real():

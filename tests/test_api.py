@@ -1,8 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
+from unittest.mock import AsyncMock, patch
 from app.main import app
-from unittest.mock import patch, AsyncMock
-from app.services.game_search_service import search_game_by_name
 
 client = TestClient(app)
 
@@ -17,15 +16,13 @@ def test_read_root():
         f"Expected message to be 'Welcome to the Game Services API', but got {response.json()}"
 
 
+@patch("app.routes.search_game_by_name", new_callable=AsyncMock)
 @pytest.mark.asyncio
-async def test_post_game_search(monkeypatch):
-    fake_result = {"title": "Halo", "tiers": ["Ultimate"]}
-
-    monkeypatch.setattr(
-        game_search_service.games_collection,
-        "find_one",
-        AsyncMock(return_value=fake_result)
-    )
+async def test_post_game_search(mock_search_game_by_name):
+    mock_search_game_by_name.return_value = {
+        "title": "Halo",
+        "tiers": ["GamePass Ultimate"]
+    }
 
     response = client.get("/search?game=Halo")
     assert response.status_code == 200
