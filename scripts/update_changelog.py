@@ -38,7 +38,9 @@ for pr in merged_prs:
         commit_type = "otros"
         message = title
 
-    entry = f"- **PR #{pr.number}**: {message}"
+    merged_date = pr.merged_at.strftime("%-d %b %Y")
+    entry = f"- **PR #{pr.number}**: {message} _({merged_date})_"
+
     if os.path.exists(comic_path):
         entry += f"\n  ![Cómic]({comic_path})"
 
