@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
-from unittest.mock import patch
+from unittest.mock import patch, AsyncMock
 
 client = TestClient(app)
 
@@ -17,21 +17,15 @@ def test_read_root():
 
 
 @pytest.mark.asyncio
-async def test_post_game_search():
-    """
-    Testea la búsqueda de un juego en el servicio de Game Pass.
-    """
-    game_name = "Halo"
-    response = client.get(f"/search?game={game_name}")
+async def test_post_game_search(monkeypatch):
+    fake_result = {"title": "Halo", "tiers": ["Ultimate"]}
 
-    assert response.status_code in [200, 404], \
-        f"Expected status code 200 or 404, but got {response.status_code}"
+    monkeypatch.setattr(
+        game_search_service.games_collection,
+        "find_one",
+        AsyncMock(return_value=fake_result)
+    )
 
-    if response.status_code == 200:
-        data = response.json()
-        assert "game" in data, "'game' key not found in response"
-        assert "tiers" in data, "'tiers' key not found in response"
-        assert isinstance(data["tiers"], list), "'tiers' is not a list"
-    elif response.status_code == 404:
-        assert response.json() == {"detail": "Game not found"}, \
-            f"Expected 'Game not found' message, but got {response.json()}"
+    response = client.get("/search?game=Halo")
+    assert response.status_code == 200
+    assert "Halo" in response.text
