@@ -34,9 +34,8 @@ def search_game(query: GameQuery):
     Recibe un JSON con:
     - **game_name**: Término a buscar (la búsqueda no distingue mayúsculas/minúsculas y permite coincidencias parciales).
 
-    Retorna un objeto con:
-    - **game**: El nombre original del juego encontrado.
-    - **in_gamepass**: Valor True, indicando que el juego se encontró en el catálogo.
+    Devuelve un objeto ``ResponseGameOnline`` con:
+    - **title**: Nombre del juego encontrado.
     - **tiers**: Lista de niveles en los que está disponible el juego.
     """
     resultGPU = advanced_search_game_ultimate(query.game_name)
