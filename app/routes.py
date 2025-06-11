@@ -7,8 +7,8 @@ from app.utils.helpers import buildResponseGameOnline
 from app.services.gamepass_service import fill_games_in_gamepass
 from app.services.nintendoonline_service import fill_games_in_nso
 from app.services.psplus_service import fill_games_in_psplus
-from app.services.game_search_service import search_game_by_name
 from app.services.streaming_games_service import fill_games_in_streaming
+from app.services.games_service import get_games_paginated, get_game_by_id, search_game_by_name
 
 router = APIRouter()
 
@@ -71,10 +71,23 @@ async def update_online_services():
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
-@router.get("/search", tags=["Online Services"])
+@router.get("/search", tags=["Games"])
 async def search_game(game: str):
     result = await search_game_by_name(game)
     if not result:
         raise HTTPException(status_code=404, detail=f"No se encontró '{game}' en la base de datos.")
 
     return ResponseGameOnline(title=result["title"], tiers=result["tiers"])
+
+
+@router.get("/games", tags=["Games"])
+async def list_games(page: int = 1, limit: int = 10):
+    return await get_games_paginated(page, limit)
+
+
+@router.get("/games/{game_id}", tags=["Games"])
+async def get_game(game_id: str):
+    game = await get_game_by_id(game_id)
+    if not game:
+        raise HTTPException(status_code=404, detail="Game not found")
+    return game
