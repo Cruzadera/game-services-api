@@ -77,7 +77,7 @@ async def search_game(game: str):
     if not result:
         raise HTTPException(status_code=404, detail=f"No se encontró '{game}' en la base de datos.")
 
-    return ResponseGameOnline(title=game, tiers=tiers, streaming=streaming)
+    return ResponseGameOnline(title=result["title"], tiers=result["tiers"], streaming=result["streaming"])
 
 
 @router.get("/games", tags=["Games"])
