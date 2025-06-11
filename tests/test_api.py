@@ -27,3 +27,30 @@ async def test_post_game_search(mock_search_game_by_name):
     response = client.get("/search?game=Halo")
     assert response.status_code == 200
     assert "Halo" in response.text
+
+
+@patch("app.routes.get_games_paginated", new_callable=AsyncMock)
+@pytest.mark.asyncio
+async def test_get_games_paginated(mock_get_games):
+    mock_get_games.return_value = [
+        {"_id": "1", "title": "Game 1"},
+        {"_id": "2", "title": "Game 2"},
+    ]
+
+    response = client.get("/games?page=1&limit=2")
+    assert response.status_code == 200
+    assert response.json() == [
+        {"_id": "1", "title": "Game 1"},
+        {"_id": "2", "title": "Game 2"},
+    ]
+
+
+@patch("app.routes.get_game_by_id", new_callable=AsyncMock)
+@pytest.mark.asyncio
+async def test_get_game_by_id(mock_get_game):
+    mock_get_game.return_value = {"_id": "1", "title": "Game 1"}
+
+    response = client.get("/games/1")
+    assert response.status_code == 200
+    assert response.json() == {"_id": "1", "title": "Game 1"}
+
