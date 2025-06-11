@@ -2,6 +2,7 @@
 
 ## 📌 Others
 
+- **PR #10**: Release 0.3 _(11 Jun 2025)_
 - **PR #9**: Add paginated game endpoints _(11 Jun 2025)_
 - **PR #8**: Update GamePass docstring _(11 Jun 2025)_
 - **PR #7**: Fix gamepass scraper test _(11 Jun 2025)_
