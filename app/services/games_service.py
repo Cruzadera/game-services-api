@@ -2,6 +2,10 @@ from typing import List, Optional
 from bson import ObjectId
 from app.database import games_collection
 
+async def search_game_by_name(name: str):
+    return await games_collection.find_one({
+        "game": {"$regex": name, "$options": "i"}
+    })
 
 async def get_games_paginated(page: int = 1, limit: int = 10) -> List[dict]:
     """Return games paginated using page and limit."""
