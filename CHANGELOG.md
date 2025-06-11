@@ -2,6 +2,7 @@
 
 ## 📌 Others
 
+- **PR #8**: Update GamePass docstring _(11 Jun 2025)_
 - **PR #7**: Fix gamepass scraper test _(11 Jun 2025)_
 - **PR #6**: Fix GeForce NOW spelling _(11 Jun 2025)_
 - **PR #5**: Add geforce now games _(9 Jun 2025)_
