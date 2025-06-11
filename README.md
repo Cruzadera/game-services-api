@@ -39,3 +39,8 @@ This API provides endpoints to query information about video game streaming serv
   uvicorn app.main:app --host 0.0.0.0 --port 10000 --reload
   ```
 Your API will be available at http://localhost:10000.
+
+## Endpoints
+
+- `GET /games?page=<number>&limit=<number>` - Lista de juegos paginada.
+- `GET /games/{game_id}` - Devuelve un juego por su `_id`.
